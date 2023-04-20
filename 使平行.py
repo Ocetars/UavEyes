@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+# push try
+
 # 创建一个窗口来显示图像和指示
 cv2.namedWindow ("Image")
 
