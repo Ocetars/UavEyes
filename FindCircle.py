@@ -1,5 +1,5 @@
 # 是否需要颜色限制？需要填1，不需要填0
-choice = 0
+choice = 1
 
 # 导入opencv库
 import cv2
@@ -23,9 +23,9 @@ while True:
 
     # 颜色限制部分
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # 转换为灰色通道
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)  # 转换为HSV空间
-    lower_green = np.array([30, 30, 40])  # 设定绿色的阈值下限
-    upper_green = np.array([90, 255, 255])  # 设定绿色的阈值上限
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV_FULL)  # 转换为HSV空间
+    lower_green = np.array([60,50,50])  # 设定绿色的阈值下限
+    upper_green = np.array([130,255,255])  # 设定绿色的阈值上限
     mask = cv2.inRange(hsv, lower_green, upper_green)  # 设定掩膜取值范围
     kernel = np.ones((5, 5), np.uint8)  # 卷积核
     opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)  # 形态学开运算
@@ -35,10 +35,10 @@ while True:
      
     if choice == 1:
         # 需要颜色限制
-        circles = cv2.HoughCircles(bila, cv2.HOUGH_GRADIENT_ALT, 1, 100, param1=100, param2=0.9, minRadius=50, maxRadius=200)
+        circles = cv2.HoughCircles(bila, cv2.HOUGH_GRADIENT_ALT, 1, 100, param1=100, param2=0.7, minRadius=15, maxRadius=200)
     else:   
         # 不需要颜色限制
-        circles = cv2.HoughCircles(Direct, cv2.HOUGH_GRADIENT_ALT, 1, 100, param1=100, param2=0.9, minRadius=50, maxRadius=200)
+        circles = cv2.HoughCircles(Direct, cv2.HOUGH_GRADIENT_ALT, 1, 100, param1=100, param2=0.7, minRadius=15, maxRadius=200)
 
 
     # 如果检测到圆形
@@ -77,6 +77,7 @@ while True:
 
     # 显示图像
     cv2.imshow("Camera", frame)
+    cv2.imshow("mask",mask)
 
     # 等待按键，如果按下q键，则退出循环
     key = cv2.waitKey(1) & 0xFF
