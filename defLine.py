@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import math
 
 # 定义一个函数，用于计算直线和画面中心的距离
 def distance_to_center(line):
@@ -21,17 +22,17 @@ def distance_to_center(line):
 # 定义一个函数，用于检测最靠近中心的直线
 def detect_line(image,
                 rho = 1,
-                theta = np.pi / 180, 
+                theta = np.pi/180, 
                 threshold = 150, 
                 minLineLength = 50, 
-                maxLineGap = 1000):
+                MaxValue = 1000):
     # 转换为灰度图像
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # 检测边缘
     edges = cv2.Canny(gray, 100, 250, apertureSize=3, L2gradient=True)
     cv2.imshow("edges", edges)
     # 检测直线
-    lines = cv2.HoughLinesP(edges, rho, theta, threshold, minLineLength, maxLineGap)
+    lines = cv2.HoughLinesP(edges, rho, theta, threshold, minLineLength, maxLineGap=MaxValue)
     # 如果检测到直线，返回最靠近中心的直线的端点坐标和距离
     if lines is not None:
         # 初始化最小距离和最小距离对应的直线索引
@@ -47,7 +48,7 @@ def detect_line(image,
         # 返回最小距离对应的直线的端点坐标和距离
         x1, y1, x2, y2 = lines[min_index][0]
 
-        return [(x1, y1), (x2, y2), min_dist]
+        return (x1, y1), (x2, y2), min_dist
     else:
         # 如果没有检测到直线，返回None
         return None
@@ -68,12 +69,12 @@ while True:
     if result is not None:
         (x1, y1), (x2, y2), min_dist = result
         cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        print(f"({x1}, {y1}), ({x2}, {y2}), {min_dist}")
-       
+        print(f"({x1}, {y1}), ({x2}, {y2}), {min_dist}")     
+    elif result is None:
+        print("line none")
     else:
-        print("No line detected")       
-    # 显示结果
-    
+        print("???")
+
     cv2.imshow("Frame", frame)
     # 等待按键
     key = cv2.waitKey(1)
