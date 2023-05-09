@@ -57,7 +57,9 @@ def detect_line(
         return None
 
 
-"""以下是主程序，仅用于测试函数"""
+"""
+以下是主程序，仅用于测试函数
+"""
 
 # 创建视频捕捉对象
 cap = cv2.VideoCapture(0)
@@ -79,7 +81,7 @@ while True:
     elif result is None:
         print("line none")
     else:
-        print("???")
+        print("error")
 
     cv2.imshow("Frame", frame)
     # 等待按键
