@@ -31,8 +31,8 @@ while True:
     opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)  # 形态学开运算
     bila = cv2.bilateralFilter(opening, 10, 200, 200)  # 双边滤波消除噪声
     Direct = cv2.bilateralFilter(gray, 10, 200, 200)
+    
     # 使用霍夫变换检测圆形，返回一个数组，每个元素是一个圆的参数（x, y, r）
-     
     if choice == 1:
         # 需要颜色限制
         circles = cv2.HoughCircles(bila, cv2.HOUGH_GRADIENT_ALT, 1, 100, param1=100, param2=0.7, minRadius=15, maxRadius=200)
