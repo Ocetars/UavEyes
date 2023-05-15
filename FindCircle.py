@@ -1,5 +1,5 @@
 # 是否需要颜色限制？需要填1，不需要填0
-choice = 1
+choice = 0
 
 # 导入opencv库
 import cv2
@@ -71,7 +71,6 @@ while True:
                 text = "Move down"
             elif dy < -threshold:
                 text = "Move up"
-
         # 在图像上显示提示信息
         cv2.putText(frame, text, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
 
