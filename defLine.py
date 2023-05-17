@@ -93,3 +93,24 @@ while True:
 # 释放资源
 cap.release()
 cv2.destroyAllWindows()
+
+"""
+主要函数说明
+HoughLinesP(image, rho, theta, threshold, lines=None, minLineLength=None, maxLineGap=None) 
+其中，参数的含义如下：
+image: 必须是二值图像,推荐使用canny边缘检测的结果图像
+rho: 线段以像素为单位的距离精度,double类型的,推荐用1.0 
+theta: 线段以弧度为单位的角度精度,推荐用numpy.pi/180 
+threshod: 累加平面的阈值参数,int类型,超过设定阈值才被检测出线段,值越大,基本上意味着检出的线段越长,检出的线段个数越少。根据情况推荐先用100试试
+minLineLength: 线段以像素为单位的最小长度,根据应用场景设置 
+maxLineGap: 最大直线间隙，如果两条直线之间的间隙小于该值，则认为它们是一条直线。
+
+cv2.canny的用法是:
+edges = cv2.Canny(image, threshold1, threshold2, apertureSize, L2gradient)
+其中，参数的含义如下：
+image: 输入的灰度图像，可以是边缘检测前的图像。
+threshold1: 第一个阈值，用于检测边缘的强度。
+threshold2: 第二个阈值，用于检测边缘的连接性。
+apertureSize: Sobel算子的核大小,用于计算图像的梯度。默认值是3。
+L2gradient: 是否使用更精确的L2范数来计算梯度强度。默认值是False。
+"""
