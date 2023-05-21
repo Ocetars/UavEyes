@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 
 # 创建条形码检测器
 detect_obj = cv2.barcode_BarcodeDetector()
