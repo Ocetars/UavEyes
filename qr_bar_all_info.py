@@ -9,11 +9,8 @@ def detect_qrcode(frame):
 
     # 如果识别到二维码
     if codeinfo:
-        # 输出识别二维码的信息
-        print("qrcode information is : \n%s"% codeinfo)
         return codeinfo
     else:
-        # 返回 None
         return None
 
 def detect_barcode(frame):
@@ -27,7 +24,6 @@ def detect_barcode(frame):
     if is_ok:
         return bar_info
     else:
-        # 返回 None
         return None
 
 def detect_allcode(frame):
@@ -43,17 +39,14 @@ def detect_allcode(frame):
 
     # 如果识别到二维码
     if codeinfo:
-        # 输出识别二维码的信息
-        print("qrcode information is : \n%s" % codeinfo)
         return codeinfo
     # 如果识别到条形码
     elif is_ok:
-        # 返回条形码信息
         return bar_info
     else:
-        # 返回 None
         return None
     
 '''
 只返回检测到的信息
+如果没检测到则返回None
 '''

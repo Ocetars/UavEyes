@@ -11,8 +11,6 @@ def detect_qrcode(frame):
     if codeinfo:
         result = np.copy(frame)
         cv2.drawContours(result, [np.int32(points)], 0, (0, 0, 255), 2)
-        # 输出识别二维码的信息
-        print("qrcode information is : \n%s"% codeinfo)
         # 返回识别到二维码的图片和信息
         return result, codeinfo
     else:
@@ -64,8 +62,6 @@ def detect_allcode(frame):
     if codeinfo:
         result = np.copy(frame)
         cv2.drawContours(result, [np.int32(QRpoints)], 0, (0, 0, 255), 2)
-        # 输出识别二维码的信息
-        print("qrcode information is : \n%s" % codeinfo)
         # 返回识别到二维码的图片和信息
         return result, codeinfo
     # 如果识别到条形码
@@ -93,5 +89,6 @@ def detect_allcode(frame):
     
 '''
 函数将返回两个值，第一个是识别到二维码或条形码后的图像，
-第二个是识别到的二维码或条形码信息。如果没有识别到二维码或条形码，则返回原始的摄像头画面和 None。
+第二个是识别到的二维码或条形码信息。
+如果没有识别到二维码或条形码，则返回原始的摄像头画面和 None。
 '''
