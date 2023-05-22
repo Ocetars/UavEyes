@@ -60,6 +60,7 @@ while True:
         threshold = 10
 
         # 根据偏差输出相应的指令
+        text = "Unknown"
         if abs(dx) < threshold and abs(dy) < threshold:
             text = "Centered"
         else:
