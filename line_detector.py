@@ -29,6 +29,9 @@ def detect_closest_line(image, rho=1, theta=np.pi / 180, threshold=150, minLineL
         if distance < closest_distance:
             closest_line = line
             closest_distance = distance
+    # 如果没有检测到直线，返回 None
+    if closest_line is None:
+        return None
     # 获取最小距离对应的直线的端点坐标和距离
     x1, y1, x2, y2 = closest_line[0]
     distance = closest_distance
@@ -54,31 +57,36 @@ threshold2: 第二个阈值，用于检测边缘的连接性。
 apertureSize: Sobel算子的核大小,用于计算图像的梯度。默认值是3。
 L2gradient: 是否使用更精确的L2范数来计算梯度强度。默认值是False。"""
 
-'''主函数示例：
-import cv2
-from line_detector import detect_closest_line
+# 主函数示例：
+if __name__ == "__main__":
+    import cv2
+    from line_detector import detect_closest_line
 
-cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("frame", width, height)
+    
+    while True:
+        ret, frame = cap.read()
+        # 检测最靠近中心的直线
+        result = detect_closest_line(frame)
+        # 如果没有检测到直线，跳过本次循环
+        if result is None:
+            cv2.imshow("frame", frame) 
+        else:
+            # 在图像上绘制直线
+            x1, y1, x2, y2, distance = result
+            cv2.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+            # 显示图像
+            cv2.imshow("frame", frame)
+            print(f"({x1}, {y1}), ({x2}, {y2}), {distance}")
+            
+        # 按下 q 键退出循环
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
 
-while True:
-    ret, frame = cap.read()
-    # 检测最靠近中心的直线
-    result = detect_closest_line(frame)
-    # 如果没有检测到直线，跳过本次循环
-    if result is None:
-        cv2.imshow("frame", frame) 
-    else:
-        # 在图像上绘制直线
-        x1, y1, x2, y2, distance = result
-        cv2.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
-        # 显示图像
-        cv2.imshow("frame", frame)
-        print(f"({x1}, {y1}), ({x2}, {y2}), {distance}")
-        
-    # 按下 q 键退出循环
-    if cv2.waitKey(1) & 0xFF == ord("q"):
-        break
-
-# 释放摄像头并关闭窗口
-cap.release()
-cv2.destroyAllWindows()'''
+    # 释放摄像头并关闭窗口
+    cap.release()
+    cv2.destroyAllWindows()
