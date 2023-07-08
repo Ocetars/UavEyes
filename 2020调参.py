@@ -14,23 +14,21 @@ parser.add_argument("--upper_red2", type=int, nargs=3, default=[360, 255, 255], 
 
 parser.add_argument("--erode_iterations", type=int, default=1, help="number of erode iterations")
 parser.add_argument("--green_dilate_iterations", type=int, default=1, help="number of green dilate iterations")
-parser.add_argument("--red_dilate_iterations", type=int, default=1, help="number of red dilate iterations")
+parser.add_argument("--red_dilate_iterations", type=int, default=2, help="number of red dilate iterations")
 parser.add_argument("--green_morph_kernel_size", type=int, default=5, help="green morph kernel size")
 parser.add_argument("--red_morph_kernel_size", type=int, default=5, help="red morph kernel size")
 parser.add_argument("--areamin", type=int, default=4000, help="minimum area of contours")
-parser.add_argument("--areamax", type=int, default=16000, help="maximum area of contours")
+parser.add_argument("--areamax", type=int, default=100000, help="maximum area of contours")
 
 # 解析命令行参数
 args = parser.parse_args()
-# 使用解析后的参数
-
-
 
 # 创建视频捕获对象
 cap = cv2.VideoCapture(0)
 
 # 循环读取视频帧
 while True:
+    # 使用解析后的参数
     lower_green = np.array(args.lower_green)
     upper_green = np.array(args.upper_green)
     lower_red = np.array(args.lower_red)
