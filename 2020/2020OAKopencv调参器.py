@@ -3,6 +3,7 @@ import cv2
 import depthai as dai
 import numpy as np
 import argparse
+import math
 
 # add命令行参数
 parser = argparse.ArgumentParser()
@@ -110,22 +111,46 @@ with dai.Device(pipeline) as device:
         contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # 绘制绿色和红色杆子的轮廓
-        for cnt in contours_green:
-            area = cv2.contourArea(cnt)
-            if area > areamin and area < areamax:
-                x, y, w, h = cv2.boundingRect(cnt)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                # cv2.drawContours(frame, [cnt], 0, (0, 255, 0), 2)
+        # for cnt in contours_green:
+        #     area = cv2.contourArea(cnt)
+        #     if area > areamin and area < areamax:
+        #         x, y, w, h = cv2.boundingRect(cnt)
+        #         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # 绘制红色和绿色杆子的轮廓
+        cam_x = int(1280 / 2)
+        cam_y = int(720 / 2)
+        min_dist = float('inf')
+        min_cnt = None
         for cnt in contours_red:
-            area = cv2.contourArea(cnt)
-            if area > areamin and area < areamax:
-                x, y, w, h = cv2.boundingRect(cnt)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                # cv2.drawContours(frame, [cnt], 0, (0, 0, 255), 2)
+            threshold = 4  # 宽高比阈值
+            x, y, w, h = cv2.boundingRect(cnt)
+            if w / h > threshold or h / w > threshold:
+                area = cv2.contourArea(cnt)
+                if area > areamin and area < areamax:
+                    M = cv2.moments(cnt)
+                    cx = int(M['m10'] / M['m00'])
+                    cy = int(M['m01'] / M['m00'])
+                    # 计算中心点坐标与摄像头中心点坐标之间的距离
+                    dist = math.sqrt((cx - cam_x) ** 2 + (cy - cam_y) ** 2)
+                    # 更新距离摄像头中心点最近的轮廓
+                    if dist < min_dist:
+                        min_dist = dist
+                        min_cnt = cnt
+        # 绘制距离摄像头中心点最近的轮廓
+        if min_cnt is not None:
+                # (x, y) 表示矩形框左上角的坐标，w 表示矩形框的宽度，h 表示矩形框的高度。
+                x, y, w, h = cv2.boundingRect(min_cnt)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (71,130,255), 2)
+                Mred = cv2.moments(min_cnt)
+                cx = int(Mred['m10'] / Mred['m00'])
+                cy = int(Mred['m01'] / Mred['m00'])
+                topLeft = dai.Point2f(cx-15, cy-30)
+                bottomRight = dai.Point2f(cx + 15, cy + 30)
+                newConfig = True
 
         # 显示图像
         cv2.imshow('frame', frame)
-        cv2.imshow("dilated_green", mask_green)
+        # cv2.imshow("dilated_green", mask_green)
         cv2.imshow("dilated_red", mask_red)
 
         # 等待按键事件
