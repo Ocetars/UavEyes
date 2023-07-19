@@ -1,17 +1,14 @@
 import cv2
 import numpy as np
+import math
 
-# cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture("D:\\Gitworkspace\\UavEyes\\2022Province\\RedCircleGround.mp4")
-# 创建具有指定大小的窗口
-cv2.namedWindow("Frame", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Frame", 1280, 720)
-cv2.namedWindow("Mask", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Mask", 1280, 720)
+cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture('2022Province\RedCircleGround.mp4')
+
 while True:
     # 从摄像头捕获图像
     ret, frame = cap.read()
-    height, width = frame.shape[:2]
+    # height, width = frame.shape[:2]
     
     # 将图像转换为HSV颜色空间
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -29,43 +26,40 @@ while True:
     mask = mask1 + mask2
 
     # 对掩码进行形态学操作以消除噪声
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones((3, 3), np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     mask = cv2.dilate(mask, kernel, iterations=4)
-    # 在掩码中查找圆形
-    # circles = cv2.HoughCircles(mask, cv2.HOUGH_GRADIENT_ALT, 1, 100, param1=100, param2=0.7, minRadius=15, maxRadius=2000)
+    # 查找图像中的所有轮廓
+    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # # 如果检测到圆形
-    # if circles is not None:
-    #     # 获取最大轮廓
-    #     circles = sorted(circles[0], key=lambda c: c[2], reverse=True)
-    #     # 取第一个元素作为最大的圆
-    #     x, y, r = circles[0]
-    #     # 将x和y转换为整数类型
-    #     x, y, r = int(x), int(y), int(r)
-    #     cv2.circle(frame, (x, y), 2, (0, 255, 0), 3)
-    #     # 在圆周上绘制一个圆
-    #     cv2.circle(frame, (x, y), r, (0, 0, 255), 2)
-    #     # 计算呼啦圈中心与图像中心的偏差
-    #     dx = x - width // 2
-    #     dy = y - height // 2
-    #     # 设置一个阈值，如果偏差小于阈值，则认为已经对准
-    #     threshold = 10
-    #     # 根据偏差输出相应的指令
-    #     direction = "Unknown"
-    #     if abs(dx) < threshold and abs(dy) < threshold:
-    #         direction = "Centered"
-    #     else:
-    #         if dx > threshold:
-    #             direction = "Move right"
-    #         elif dx < -threshold:
-    #             direction = "Move left"
-    #         if dy > threshold:
-    #             direction = "Move down"
-    #         elif dy < -threshold:
-    #             direction = "Move up"
-                
-    #     print(direction)
+    # 循环遍历所有轮廓
+    for contour in contours:
+        # 计算轮廓的面积和周长
+        area = cv2.contourArea(contour)
+        perimeter = cv2.arcLength(contour, True)
+        # 如果周长为零，则跳过此轮廓
+        if perimeter == 0:
+            continue
+        # 计算近似轮廓并计算其与原始轮廓之间的差异
+        approx = cv2.approxPolyDP(contour, 0.01 * perimeter, True)
+        circularity = 4 * math.pi * area / (perimeter * perimeter)
+        # 如果轮廓是圆形，则绘制它
+        if len(approx) > 8 and circularity > 0.7 and area > 1000:
+            # cv2.drawContours(frame, [contour], -1, (0, 255, 0), 2)
+            ellipse = cv2.fitEllipse(contour)
+            # 获取椭圆参数
+            center, axes, angle = ellipse
+            major_axis, minor_axis = axes
+            x1, y1 = center
+            x_center, y_center = int(x1), int(y1)
+            # 在图像上绘制中心点
+            cv2.circle(frame, (x_center, y_center), 5, (0, 255, 0), -1)
+            # 在图像上绘制中心点的值
+            cv2.putText(frame, f"({x_center}, {y_center})", (x_center, y_center), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 5)
+            # 绘制椭圆和识别框
+            cv2.ellipse(frame, ellipse, (0, 255, 0), 2)
+            
+            print("Ellipse detected at: ({}, {})".format(x_center, y_center))
 
     # # 显示图像
     cv2.imshow("Mask", mask)

@@ -32,10 +32,10 @@ while True:
     kernel = np.ones((5, 5), np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
-    # 在掩码中查找圆圈
+    # 在掩码中查找轮廓
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # 如果检测到圆形
+    # 如果检测到轮廓
     if contours:
         # 获取最大轮廓
         contour = max(contours, key=cv2.contourArea)
