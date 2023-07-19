@@ -21,17 +21,18 @@ def find_circle(frame,
     if choice == 1:
         # 需要颜色限制
         circles = cv2.HoughCircles(bila, cv2.HOUGH_GRADIENT_ALT, 1, 100, param1=100, param2=0.7, minRadius=15, maxRadius=200)
-    else:
+    elif choice == 0:
         # 不需要颜色限制
         circles = cv2.HoughCircles(Direct, cv2.HOUGH_GRADIENT_ALT, 1, 100, param1=100, param2=0.7, minRadius=15, maxRadius=200)
 
     # 如果检测到圆形
     if circles is not None:
         circles = sorted(circles[0], key=lambda c: c[2], reverse=True)
-
         # 取第一个元素作为最大的圆
         x, y, r = circles[0]
-
+        cv2.circle(frame, (x, y), 2, (0, 255, 0), 3)
+        # 在圆周上绘制一个圆
+        cv2.circle(frame, (x, y), r, (0, 0, 255), 2)
         # 计算呼啦圈中心与图像中心的偏差
         dx = x - width // 2
         dy = y - height // 2
@@ -54,7 +55,7 @@ def find_circle(frame,
                 direction = "Move up"
 
         # 返回圆心坐标和最后判断出的方向
-        return (x, y), direction
+        return (x, y), direction, frame, bila
 
     # 如果没有检测到圆形，则返回空值
-    return None, None
+    return None, None ,frame, bila
