@@ -26,7 +26,7 @@ while True:
     mask = mask1 + mask2
 
     # 对掩码进行形态学操作以消除噪声
-    kernel = np.ones((3, 3), np.uint8)
+    kernel = np.ones((5, 5), np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     mask = cv2.dilate(mask, kernel, iterations=4)
     # 查找图像中的所有轮廓
