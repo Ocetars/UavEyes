@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 
 
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture("D:\\Gitworkspace\\UavEyes\\2021\\oak.mp4")
 
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -11,7 +12,7 @@ center_x = int(width / 2)
 center_y = int(height / 2)
 
 # 定义绿色范围
-lower_green = np.array([60, 50, 50])
+lower_green = np.array([60, 30, 50])
 upper_green = np.array([90, 255, 255])
 
 # 定义中心区域大小
@@ -53,7 +54,7 @@ while True:
     cv2.imshow("frame", frame)
     cv2.imshow("mask", mask)
 
-    if cv2.waitKey(1) & 0xFF == ord("q"):
+    if cv2.waitKey(25) & 0xFF == ord("q"):
         break
 
 # 释放摄像头并关闭所有窗口
