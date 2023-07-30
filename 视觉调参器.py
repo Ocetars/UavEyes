@@ -1,102 +1,135 @@
-import sys
 import cv2
 import numpy as np
+import sys
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QSlider
+from PyQt5.QtWidgets import (
+    QApplication,
+    QHBoxLayout,
+    QLabel,
+    QSlider,
+    QVBoxLayout,
+    QWidget,
+)
 
-class MainWindow(QMainWindow):
+
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        # 创建一个标签用于显示视频流
-        self.image_label = QLabel(self)
-        self.image_label.setAlignment(Qt.AlignCenter)
-        self.setCentralWidget(self.image_label)
+        # 设置窗口标题和大小
+        self.setWindowTitle("视觉调参器")
+        self.setGeometry(150, 150, 850, 650)
 
-        # 创建六个滑动条，用于调整HSV值
+        # 创建水平布局
+        layout = QHBoxLayout()
+
+        # 创建左侧垂直布局
+        left_layout = QVBoxLayout()
+
+        # 创建标签用于显示原始图像
+        # self.image_label = QLabel(self)
+        # self.image_label.setAlignment(Qt.AlignCenter)
+        # left_layout.addWidget(self.image_label)
+
+        # 创建右侧垂直布局
+        right_layout = QVBoxLayout()
+
+        # 创建标签用于显示mask图像
+        self.mask_label = QLabel(self)
+        self.mask_label.setAlignment(Qt.AlignCenter)
+        # self.mask_label.setFixedSize(1280*2, 720)
+        right_layout.addWidget(self.mask_label)
+
+        # 创建滑动条用于调整颜色阈值
+        self.h_min_label = QLabel("H_min: 0", self)
         self.h_min_slider = QSlider(Qt.Horizontal)
         self.h_min_slider.setMinimum(0)
         self.h_min_slider.setMaximum(255)
         self.h_min_slider.setValue(0)
         self.h_min_slider.valueChanged.connect(self.update_mask)
-        # layout.addWidget(self.h_min_slider)
+        right_layout.addWidget(self.h_min_label)
+        right_layout.addWidget(self.h_min_slider)
 
+        self.s_min_label = QLabel("S_min: 0", self)
         self.s_min_slider = QSlider(Qt.Horizontal)
         self.s_min_slider.setMinimum(0)
         self.s_min_slider.setMaximum(255)
         self.s_min_slider.setValue(0)
         self.s_min_slider.valueChanged.connect(self.update_mask)
-        # layout.addWidget(self.s_min_slider)
+        right_layout.addWidget(self.s_min_label)
+        right_layout.addWidget(self.s_min_slider)
 
+        self.v_min_label = QLabel("V_min: 0", self)
         self.v_min_slider = QSlider(Qt.Horizontal)
         self.v_min_slider.setMinimum(0)
         self.v_min_slider.setMaximum(255)
         self.v_min_slider.setValue(0)
         self.v_min_slider.valueChanged.connect(self.update_mask)
-        # layout.addWidget(self.v_min_slider)
+        right_layout.addWidget(self.v_min_label)
+        right_layout.addWidget(self.v_min_slider)
 
+        self.h_max_label = QLabel("H_max: 255", self)
         self.h_max_slider = QSlider(Qt.Horizontal)
         self.h_max_slider.setMinimum(0)
         self.h_max_slider.setMaximum(255)
         self.h_max_slider.setValue(255)
         self.h_max_slider.valueChanged.connect(self.update_mask)
-        # layout.addWidget(self.h_max_slider)
+        right_layout.addWidget(self.h_max_label)
+        right_layout.addWidget(self.h_max_slider)
 
+        self.s_max_label = QLabel("S_max: 255", self)
         self.s_max_slider = QSlider(Qt.Horizontal)
         self.s_max_slider.setMinimum(0)
         self.s_max_slider.setMaximum(255)
         self.s_max_slider.setValue(255)
         self.s_max_slider.valueChanged.connect(self.update_mask)
-        # layout.addWidget(self.s_max_slider)
+        right_layout.addWidget(self.s_max_label)
+        right_layout.addWidget(self.s_max_slider)
 
+        self.v_max_label = QLabel("V_max: 255", self)
         self.v_max_slider = QSlider(Qt.Horizontal)
         self.v_max_slider.setMinimum(0)
         self.v_max_slider.setMaximum(255)
         self.v_max_slider.setValue(255)
         self.v_max_slider.valueChanged.connect(self.update_mask)
-        # layout.addWidget(self.v_max_slider)
+        right_layout.addWidget(self.v_max_label)
+        right_layout.addWidget(self.v_max_slider)
 
-        # 创建一个垂直布局，用于放置滑动条和视频流标签
-        layout = QVBoxLayout()
-        layout.addWidget(self.h_min_slider)
-        layout.addWidget(self.s_min_slider)
-        layout.addWidget(self.v_min_slider)
-        layout.addWidget(self.h_max_slider)
-        layout.addWidget(self.s_max_slider)
-        layout.addWidget(self.v_max_slider)
-        layout.addWidget(self.image_label)
+        # 创建标签用于显示HSV阈值范围
+        self.hsv_range_label_low = QLabel("HSV阈值下限: H(0), S(0), V(0)", self)
+        right_layout.addWidget(self.hsv_range_label_low)
+        self.hsv_range_label_high = QLabel("HSV阈值上限: H(255), S(255), V(255)", self)
+        right_layout.addWidget(self.hsv_range_label_high)
+        
 
-        # 创建一个窗口部件，用于放置垂直布局
-        widget = QWidget()
-        widget.setLayout(layout)
-        self.setCentralWidget(widget)
+        # 将左侧和右侧布局添加到水平布局中
+        layout.addLayout(left_layout)
+        layout.addLayout(right_layout)
 
-        # 创建一个定时器，用于定期更新视频流
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_frame)
-        self.timer.start(50)
+        # 设置窗口布局
+        self.setLayout(layout)
 
-        # 打开摄像头
-        self.cap = cv2.VideoCapture(0)
+        # 创建摄像头对象
+        self.cap = cv2.VideoCapture(1)
 
-    def update_frame(self):
-        # 从摄像头读取一帧
-        ret, frame = self.cap.read()
+        # 设置摄像头分辨率为640x480
+        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
-        # 将帧转换为Qt图像
-        if ret:
-            image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888).rgbSwapped()
-            pixmap = QPixmap.fromImage(image)
-            self.image_label.setPixmap(pixmap)
+        # 获取摄像头分辨率
+        self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        # 创建定时器用于定时更新摄像头画面
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_mask)
+        self.timer.start(25)
+
+        # 显示窗口
+        self.show()
 
     def update_mask(self):
-        # 从摄像头读取一帧
-        ret, frame = self.cap.read()
-
-        # 将帧转换为HSV颜色空间
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
         # 获取滑动条的值
         h_min = self.h_min_slider.value()
         s_min = self.s_min_slider.value()
@@ -105,42 +138,54 @@ class MainWindow(QMainWindow):
         s_max = self.s_max_slider.value()
         v_max = self.v_max_slider.value()
 
-        # 创建两个掩码，用于过滤颜色
-        lower = (h_min, s_min, v_min)
-        upper = (h_max, s_max, v_max)
-        mask = cv2.inRange(hsv, lower, upper)
-        inv_mask = cv2.bitwise_not(mask)
+        # 更新HSV阈值范围标签
+        self.hsv_range_label_low.setText(
+            f"HSV阈值下限: H({h_min}), S({s_min}), V({v_min})"
+        )
+        self.hsv_range_label_high.setText(
+            f"HSV阈值上限: H({h_max}), S({s_max}), V({v_max})"
+        )
 
-        # 将掩码应用于原始图像
-        result = cv2.bitwise_and(frame, frame, mask=inv_mask)
-        
-        # 将掩码转换为三维数组
-        mask_3d = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-        # 将原始图像和掩码连接起来
-        combined_image = np.concatenate((frame, mask_3d), axis=1)
-        # 将连接后的图像转换为Qt图像
-        combined_image = cv2.cvtColor(combined_image, cv2.COLOR_BGR2RGB)
-        combined_image = QImage(combined_image, combined_image.shape[1], combined_image.shape[0], QImage.Format_RGB888)
-        combined_pixmap = QPixmap.fromImage(combined_image)
+        # 更新滑动条标签的文本
+        self.h_min_label.setText(f"H_min: {h_min}")
+        self.s_min_label.setText(f"S_min: {s_min}")
+        self.v_min_label.setText(f"V_min: {v_min}")
+        self.h_max_label.setText(f"H_max: {h_max}")
+        self.s_max_label.setText(f"S_max: {s_max}")
+        self.v_max_label.setText(f"V_max: {v_max}")
 
-        # 将掩码转换为Qt图像
-        mask_image = QImage(mask, mask.shape[1], mask.shape[0], QImage.Format_Grayscale8)
-        mask_pixmap = QPixmap.fromImage(mask_image)
+        # 定义颜色范围
+        lower_color = np.array([h_min, s_min, v_min])
+        upper_color = np.array([h_max, s_max, v_max])
 
-        # 将帧和掩码组合成一个图像
-        combined_image = np.concatenate((frame, mask), axis=1)
-        combined_image = cv2.cvtColor(combined_image, cv2.COLOR_BGR2RGB)
+        # 读取摄像头图像
+        ret, frame = self.cap.read()
 
-        # 将组合图像转换为Qt图像
-        combined_image = QImage(combined_image, combined_image.shape[1], combined_image.shape[0], QImage.Format_RGB888).rgbSwapped()
-        combined_pixmap = QPixmap.fromImage(combined_image)
+        # 将帧转换为HSV颜色空间
+        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # 更新标签
-        self.image_label.setPixmap(combined_pixmap)
-        self.mask_label.setPixmap(mask_pixmap)
+        # 创建mask图像
+        mask = cv2.inRange(hsv_frame, lower_color, upper_color)
 
-if __name__ == '__main__':
+        # 将原始图像和mask图像水平拼接在一起
+        hconcat_img = cv2.hconcat([frame, cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)])
+
+        # 将拼接后的图像转换为QImage格式
+        qimage = QImage(
+            hconcat_img.data,
+            hconcat_img.shape[1],
+            hconcat_img.shape[0],
+            QImage.Format_RGB888,
+        ).rgbSwapped()
+
+        # 将QImage显示在标签上
+        # self.image_label.setPixmap(QPixmap.fromImage(qimage).scaled((self.width)*2, (self.height)))
+        self.mask_label.setPixmap(
+            QPixmap.fromImage(qimage).scaled((self.width) * 2, (self.height))
+        )
+
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec_())
