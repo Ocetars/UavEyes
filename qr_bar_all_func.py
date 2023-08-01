@@ -56,7 +56,8 @@ def detect_allcode(frame):
     # 检测识别二维码
     codeinfo, QRpoints, straight_qrcode = qrcoder.detectAndDecode(frame)
     # 检测识别条形码
-    is_ok, bar_info, bar_type, BARpoints = detect_obj.detectAndDecode(frame)
+    result = detect_obj.detectAndDecode(frame)
+    is_ok, bar_info, bar_type, BARpoints = result
 
     # 如果识别到二维码
     if codeinfo:
@@ -92,3 +93,34 @@ def detect_allcode(frame):
 第二个是识别到的二维码或条形码信息。
 如果没有识别到二维码或条形码，则返回原始的摄像头画面和 None。
 '''
+
+if __name__ == "__main__":
+    # 打开摄像头
+    cap = cv2.VideoCapture(2)
+    # 设置摄像头分辨率
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
+    while True:
+        # 读取摄像头画面
+        ret, frame = cap.read()
+        # 识别二维码
+        # result, codeinfo = detect_qrcode(frame)
+        # 识别条形码
+        result, codeinfo = detect_barcode(frame)
+        # 识别二维码和条形码
+        # result, codeinfo = detect_allcode(frame)
+
+        # 如果识别到二维码或条形码
+        if codeinfo:
+            print(codeinfo)
+
+        # 显示画面
+        cv2.imshow("capture", result)
+        # 按 q 键退出
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+
+    # 释放摄像头
+    cap.release()
+    cv2.destroyAllWindows()
