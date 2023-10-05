@@ -15,7 +15,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 while not rospy.is_shutdown():
     # 从摄像头捕获图像
     ret, frame = cap.read()
-    frame = cv2.rotate(frame, cv2.ROTATE_180)
+    # frame = cv2.rotate(frame, cv2.ROTATE_180)
     # height, width = frame.shape[:2]
     
     # 将图像转换为HSV颜色空间

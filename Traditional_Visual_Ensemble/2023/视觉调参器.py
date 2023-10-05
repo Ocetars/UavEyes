@@ -111,7 +111,7 @@ class MainWindow(QWidget):
         self.setLayout(layout)
 
         # 创建摄像头对象
-        self.cap = cv2.VideoCapture(1)
+        self.cap = cv2.VideoCapture(2)
 
         # 设置摄像头分辨率为640x480
         # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)

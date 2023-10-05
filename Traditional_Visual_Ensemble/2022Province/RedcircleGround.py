@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import math
 
-cap = cv2.VideoCapture(0)
-# cap = cv2.VideoCapture('2022Province\RedCircleGround.mp4')
+# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('2022Province\RedCircleGround.mp4')
 
 while True:
     # 从摄像头捕获图像
@@ -66,7 +66,7 @@ while True:
     cv2.imshow("Frame", frame)
 
     # 按'q'键退出循环
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(25) & 0xFF == ord('q'):
         break
 
 # 释放摄像头并关闭所有窗口

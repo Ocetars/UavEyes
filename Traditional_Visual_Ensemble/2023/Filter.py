@@ -45,5 +45,5 @@ if __name__ == '__main__':
     last_point = None  # 上一个坐标点
     error_count = 0  # 连续的误差次数
     max_error_count = 60  # 最大的连续误差次数
-    sub = rospy.Subscriber('redcircle_ground', Point, point_callback)
+    sub = rospy.Subscriber('fire_point', Point, point_callback)
     rospy.spin()

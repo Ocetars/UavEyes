@@ -1,3 +1,4 @@
+# 经实验在处理视频流时全部不可用，只能处理图片
 import cv2
 import numpy as np
 import random
